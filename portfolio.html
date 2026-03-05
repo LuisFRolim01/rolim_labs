@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rolim Labs — Desenvolvimento de Software</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0F172A;--surface:#131f35;--border:#1e2d47;--accent:#F97316;--accent-dim:rgba(249,115,22,0.1);--accent-glow:rgba(249,115,22,0.25);--text:#F5F5F5;--muted:#64748b;--fd:'Syne',sans-serif;--fm:'DM Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fd);overflow-x:hidden;cursor:none}
+.cursor{width:10px;height:10px;background:var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .1s ease}
+.cursor-ring{width:32px;height:32px;border:1.5px solid var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transition:all .15s ease;opacity:.5}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 4rem;background:rgba(15,23,42,.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.nav-logo-text{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.nav-logo-text span{color:var(--accent)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.74rem;font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{background:var(--accent);color:#000;padding:.55rem 1.3rem;font-family:var(--fd);font-weight:700;font-size:.78rem;text-decoration:none;cursor:none;transition:opacity .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.nav-cta:hover{opacity:.85}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding:8rem 4rem 4rem;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.03) 1px,transparent 1px);background-size:64px 64px;pointer-events:none}
+.hero-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 65%);top:40%;left:55%;transform:translate(-50%,-50%);pointer-events:none}
+.hero-glow2{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(59,130,246,.05) 0%,transparent 65%);top:15%;left:5%;pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:1200px;width:100%;margin:0 auto}
+.status-badge{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fm);font-size:.7rem;color:var(--accent);border:1px solid rgba(249,115,22,.3);padding:.35rem .85rem;margin-bottom:2rem;background:rgba(249,115,22,.05);opacity:0;animation:fadeUp .8s forwards .1s}
+.status-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
+.hero-tag{font-family:var(--fm);font-size:.74rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.2rem;opacity:0;animation:fadeUp .8s forwards .25s}
+.hero-name{font-size:clamp(3.5rem,9vw,9rem);font-weight:800;line-height:.9;letter-spacing:-.04em;margin-bottom:2rem;opacity:0;animation:fadeUp .8s forwards .4s}
+.hero-name .stroke{color:transparent;-webkit-text-stroke:1px rgba(245,245,245,.18);display:block}
+.hero-name .accent-word{color:var(--accent)}
+.hero-desc{max-width:500px;font-family:var(--fm);font-size:.88rem;color:var(--muted);line-height:1.9;margin-bottom:2.5rem;opacity:0;animation:fadeUp .8s forwards .55s}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fadeUp .8s forwards .7s}
+.btn-primary{background:var(--accent);color:#000;padding:.9rem 2.2rem;font-family:var(--fd);font-weight:700;font-size:.85rem;text-decoration:none;border:none;cursor:none;transition:transform .2s,box-shadow .2s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--accent-glow)}
+.btn-outline{border:1px solid var(--border);color:var(--text);padding:.9rem 2.2rem;font-family:var(--fd);font-weight:600;font-size:.85rem;text-decoration:none;cursor:none;transition:border-color .2s,color .2s}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.hero-stats{position:absolute;right:4rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2rem;opacity:0;animation:fadeLeft .8s forwards .9s}
+.stat-item{text-align:right;border-right:2px solid var(--accent);padding-right:1.2rem}
+.stat-num{font-size:2.2rem;font-weight:800;line-height:1}
+.stat-label{font-family:var(--fm);font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
+
+/* MARQUEE */
+.marquee-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.9rem 0;background:var(--surface)}
+.marquee-track{display:flex;gap:3rem;animation:marquee 22s linear infinite;white-space:nowrap;width:max-content}
+.marquee-item{font-family:var(--fm);font-size:.72rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:.8rem}
+.marquee-item::before{content:'//';color:var(--accent)}
+
+/* SECTIONS */
+section{padding:8rem 4rem}
+.section-header{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:5rem}
+.section-num{font-family:var(--fm);font-size:.68rem;color:var(--accent);letter-spacing:.2em}
+.section-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.03em}
+.section-line{flex:1;height:1px;background:var(--border)}
+
+/* ABOUT */
+#about{background:var(--surface)}
+.about-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.about-text p{font-family:var(--fm);font-size:.88rem;color:var(--muted);line-height:2;margin-bottom:1.5rem}
+.about-text p strong{color:var(--text);font-family:var(--fd);font-weight:700}
+.hl{color:var(--accent);font-style:italic}
+.timeline-item{display:grid;grid-template-columns:80px 1fr;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid var(--border);position:relative}
+.timeline-item::before{content:'';position:absolute;left:72px;top:0;bottom:0;width:1px;background:var(--border)}
+.timeline-year{font-family:var(--fm);font-size:.68rem;color:var(--accent);letter-spacing:.1em;padding-top:.2rem}
+.timeline-content h4{font-size:.92rem;font-weight:700;margin-bottom:.3rem}
+.timeline-content p{font-family:var(--fm);font-size:.76rem;color:var(--muted);line-height:1.6}
+
+/* SERVICES */
+#skills{background:var(--bg)}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.service-card{background:var(--bg);padding:2.8rem 2.2rem;position:relative;overflow:hidden;transition:background .3s;cursor:none}
+.service-card:hover{background:#111d30}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.service-card:hover::before{transform:scaleX(1)}
+.service-num{font-family:var(--fm);font-size:.62rem;color:var(--accent);letter-spacing:.2em;margin-bottom:1.5rem;opacity:.6}
+.service-icon{font-size:2rem;margin-bottom:1.2rem;display:block}
+.service-name{font-size:1.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem}
+.service-desc{font-family:var(--fm);font-size:.76rem;color:var(--muted);line-height:1.8;margin-bottom:1.5rem}
+.service-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.service-tag{font-family:var(--fm);font-size:.6rem;color:var(--muted);border:1px solid var(--border);padding:.2rem .55rem;letter-spacing:.08em;transition:color .2s,border-color .2s}
+.service-card:hover .service-tag{color:var(--accent);border-color:rgba(249,115,22,.3)}
+
+/* NUMBERS */
+.numbers-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:5rem}
+.number-item{background:var(--surface);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden;transition:background .3s}
+.number-item:hover{background:#162036}
+.number-big{font-size:clamp(2.5rem,4vw,4rem);font-weight:800;letter-spacing:-.04em;color:var(--text);line-height:1;margin-bottom:.4rem}
+.number-big span{color:var(--accent)}
+.number-label{font-family:var(--fm);font-size:.7rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase}
+.number-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}
+.number-item:hover::after{opacity:1}
+
+/* PROJECTS */
+#projects{background:var(--surface)}
+#projects .inner{max-width:1200px;margin:0 auto}
+.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.project-card{background:var(--bg);padding:3rem;position:relative;overflow:hidden;cursor:none;transition:background .3s;border:1px solid var(--border)}
+.project-card:hover{background:#111d30}
+.project-card.featured{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.project-num{font-family:var(--fm);font-size:.62rem;color:var(--muted);letter-spacing:.2em;margin-bottom:1.5rem}
+.project-title{font-size:1.55rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.8rem;transition:color .3s}
+.project-card:hover .project-title{color:var(--accent)}
+.project-desc{font-family:var(--fm);font-size:.78rem;color:var(--muted);line-height:1.8;margin-bottom:2rem}
+.project-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.tag{font-family:var(--fm);font-size:.62rem;color:var(--accent);border:1px solid rgba(249,115,22,.3);padding:.28rem .65rem;letter-spacing:.1em;text-transform:uppercase}
+.project-link{font-family:var(--fm);font-size:.74rem;color:var(--text);text-decoration:none;letter-spacing:.1em;display:inline-flex;align-items:center;gap:.5rem;transition:color .2s}
+.project-link:hover{color:var(--accent)}
+.project-link::after{content:'→';transition:transform .2s}
+.project-link:hover::after{transform:translateX(4px)}
+.project-visual{border-radius:6px;height:240px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden}
+.pv-blue{background:linear-gradient(135deg,#0f172a,#1e3a5f,#0e4b8a)}
+.pv-dark{background:linear-gradient(135deg,#1a0a00,#3d1c00,#7c3800)}
+.project-visual::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(255,255,255,.012) 12px,rgba(255,255,255,.012) 24px)}
+
+/* CLIENTS */
+#clients{background:var(--bg)}
+#clients .inner{max-width:1200px;margin:0 auto}
+.clients-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2.5rem}
+.client-card{border:1px solid var(--border);padding:2rem;background:var(--surface);transition:border-color .3s,transform .3s;display:flex;flex-direction:column;gap:.8rem}
+.client-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.client-logo-wrap{width:52px;height:52px;border-radius:10px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.client-name{font-size:.95rem;font-weight:700}
+.client-segment{font-family:var(--fm);font-size:.65rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}
+.client-desc{font-family:var(--fm);font-size:.75rem;color:var(--muted);line-height:1.7}
+.client-result{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.64rem;color:var(--accent);border:1px solid rgba(249,115,22,.25);padding:.22rem .6rem;background:var(--accent-dim);margin-top:auto;width:fit-content}
+.clients-logos{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2rem;padding:2rem;border:1px solid var(--border);background:var(--surface)}
+.logo-pill{font-family:var(--fm);font-size:.75rem;color:var(--muted);padding:.45rem 1.1rem;border:1px solid var(--border);letter-spacing:.1em;text-transform:uppercase;transition:color .2s,border-color .2s}
+.logo-pill:hover{color:var(--text);border-color:var(--accent)}
+.clients-note{font-family:var(--fm);font-size:.7rem;color:var(--muted);text-align:center;margin-top:1rem}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.contact-left h3{font-size:clamp(1.8rem,3vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:1.5rem}
+.contact-left h3 span{color:var(--accent)}
+.contact-left p{font-family:var(--fm);font-size:.84rem;color:var(--muted);line-height:1.9;margin-bottom:3rem}
+.contact-socials{display:flex;flex-direction:column}
+.social-link{display:flex;align-items:center;gap:1rem;font-family:var(--fm);font-size:.78rem;color:var(--muted);text-decoration:none;padding:.9rem 0;border-bottom:1px solid var(--border);transition:color .2s,padding-left .2s}
+.social-link:hover{color:var(--accent);padding-left:.5rem}
+.social-link span{flex:1}
+.social-link .arrow{opacity:0;transition:opacity .2s}
+.social-link:hover .arrow{opacity:1}
+.contact-form{display:flex;flex-direction:column;gap:1.2rem}
+.form-group{display:flex;flex-direction:column;gap:.45rem}
+.form-group label{font-family:var(--fm);font-size:.62rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase}
+.form-group input,.form-group textarea{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.9rem 1.1rem;font-family:var(--fm);font-size:.84rem;outline:none;transition:border-color .3s;resize:vertical}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{min-height:110px}
+.btn-send{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:.95rem 2rem;font-family:var(--fd);font-weight:700;font-size:.84rem;letter-spacing:.08em;cursor:none;transition:background .3s,color .3s;align-self:flex-start}
+.btn-send:hover{background:var(--accent);color:#000}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.2rem 4rem;display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
+footer p{font-family:var(--fm);font-size:.68rem;color:var(--muted)}
+footer p span{color:var(--accent)}
+.footer-brand{display:flex;align-items:center;gap:.6rem}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeLeft{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem}
+  .nav-links,.nav-cta{display:none}
+  section{padding:5rem 1.5rem}
+  #hero{padding:6rem 1.5rem 4rem}
+  .hero-stats{display:none}
+  .about-inner,.projects-grid,.contact-grid{grid-template-columns:1fr}
+  .project-card.featured{grid-column:span 1;grid-template-columns:1fr}
+  .clients-grid,.services-grid{grid-template-columns:1fr}
+  .numbers-strip{grid-template-columns:repeat(2,1fr)}
+  footer{flex-direction:column;gap:.8rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <svg width="38" height="38" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F97316" stop-opacity=".4"/><stop offset="100%" stop-color="#0F172A" stop-opacity="0"/></linearGradient></defs>
+      <rect width="120" height="120" rx="16" fill="#0F172A"/>
+      <rect width="120" height="120" rx="16" fill="url(#g1)" opacity=".3"/>
+      <text x="7" y="90" font-family="Arial Black,sans-serif" font-weight="900" font-size="84" fill="#F5F5F5">R</text>
+      <g transform="translate(60,16)">
+        <path d="M10 0 C10 0 44 0 44 16 C44 26 36 30 26 30 L26 86 C26 90 22 94 18 94 C14 94 10 90 10 86 L10 0Z" fill="#F97316"/>
+        <ellipse cx="30" cy="14" rx="9" ry="8" fill="#0F172A"/>
+        <line x1="22" y1="8" x2="38" y2="8" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="22" y1="14" x2="38" y2="14" stroke="#0F172A" stroke-width="2" stroke-linecap="round"/>
+        <line x1="22" y1="20" x2="38" y2="20" stroke="#0F172A" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      <circle cx="104" cy="106" r="4" fill="#F97316" opacity=".8"/>
+    </svg>
+    <span class="nav-logo-text">Rolim <span>Labs</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">sobre</a></li>
+    <li><a href="#skills">servicos</a></li>
+    <li><a href="#projects">projetos</a></li>
+    <li><a href="#clients">clientes</a></li>
+    <li><a href="#contact">contato</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Iniciar Projeto</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-content">
+    <div class="status-badge"><span class="status-dot"></span>Disponivel para novos projetos</div>
+    <p class="hero-tag">// solucoes digitais sob medida</p>
+    <h1 class="hero-name">
+      Rolim<br>
+      <span class="accent-word">Labs</span><span class="stroke">.</span>
+    </h1>
+    <p class="hero-desc">Transformamos ideias em produtos digitais de alto impacto. Do conceito ao codigo — sistemas robustos, interfaces modernas e experiencias que impressionam.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">Ver Projetos</a>
+      <a href="#contact" class="btn-outline">Iniciar Projeto</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">+20</div><div class="stat-label">Projetos</div></div>
+    <div class="stat-item"><div class="stat-num">+10</div><div class="stat-label">Clientes</div></div>
+    <div class="stat-item"><div class="stat-num">3+</div><div class="stat-label">Anos exp.</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">React</span><span class="marquee-item">Node.js</span><span class="marquee-item">React Native</span><span class="marquee-item">TypeScript</span><span class="marquee-item">Next.js</span><span class="marquee-item">PostgreSQL</span><span class="marquee-item">MongoDB</span><span class="marquee-item">AWS</span><span class="marquee-item">Docker</span><span class="marquee-item">APIs REST</span>
+    <span class="marquee-item">React</span><span class="marquee-item">Node.js</span><span class="marquee-item">React Native</span><span class="marquee-item">TypeScript</span><span class="marquee-item">Next.js</span><span class="marquee-item">PostgreSQL</span><span class="marquee-item">MongoDB</span><span class="marquee-item">AWS</span><span class="marquee-item">Docker</span><span class="marquee-item">APIs REST</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-text reveal">
+      <div class="section-header" style="margin-bottom:2.5rem">
+        <span class="section-num">01</span>
+        <h2 class="section-title">Minha Historia</h2>
+      </div>
+      <p><strong>Ola!</strong> Sou desenvolvedor e fundador da Rolim Labs, apaixonado por transformar problemas reais em solucoes digitais elegantes. Minha jornada comecou com uma curiosidade genuina sobre como a tecnologia pode mudar a vida das pessoas.</p>
+      <p>Com experiencia em projetos que vao de <span class="hl">startups em fase inicial</span> ate empresas estabelecidas, desenvolvo sistemas completos com foco em performance, escalabilidade e experiencia do usuario.</p>
+      <p>Acredito que o melhor software e aquele que resolve problemas reais de forma elegante. Cada linha de codigo e escrita com intencao e cuidado.</p>
+      <br/>
+      <a href="#contact" class="btn-primary" style="display:inline-block;margin-top:.5rem">Vamos conversar</a>
+    </div>
+    <div class="reveal" style="transition-delay:.2s">
+      <div class="timeline-item"><div class="timeline-year">2024</div><div class="timeline-content"><h4>Rolim Labs — Fundacao</h4><p>Criacao do estudio de desenvolvimento focado em projetos de alto impacto.</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2023</div><div class="timeline-content"><h4>Senior Dev — Projetos Corporativos</h4><p>Arquitetura de sistemas SaaS e lideranca tecnica de equipes.</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2022</div><div class="timeline-content"><h4>Full Stack Freelancer</h4><p>Projetos para clientes nacionais e internacionais. Apps, plataformas e integracoes.</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2021</div><div class="timeline-content"><h4>Inicio da Jornada</h4><p>Primeiros projetos profissionais e um amor imediato pelo codigo.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES + NUMBERS -->
+<section id="skills" style="padding:8rem 4rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">O que fazemos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal"><div class="service-num">// 01</div><span class="service-icon">&#127760;</span><div class="service-name">Desenvolvimento Web</div><div class="service-desc">Sites, plataformas e sistemas web completos. Do landing page ao SaaS complexo com multiplos usuarios e integracoes.</div><div class="service-tags"><span class="service-tag">Next.js</span><span class="service-tag">React</span><span class="service-tag">Node.js</span><span class="service-tag">TypeScript</span></div></div>
+      <div class="service-card reveal" style="transition-delay:.1s"><div class="service-num">// 02</div><span class="service-icon">&#128241;</span><div class="service-name">Apps Mobile</div><div class="service-desc">Aplicativos iOS e Android com experiencia nativa. Da prototipagem a publicacao nas lojas com performance de alto nivel.</div><div class="service-tags"><span class="service-tag">React Native</span><span class="service-tag">Expo</span><span class="service-tag">iOS</span><span class="service-tag">Android</span></div></div>
+      <div class="service-card reveal" style="transition-delay:.2s"><div class="service-num">// 03</div><span class="service-icon">&#128279;</span><div class="service-name">APIs e Integracoes</div><div class="service-desc">Construcao e integracao de APIs REST e GraphQL. Conexao com gateways de pagamento, ERPs e automacoes.</div><div class="service-tags"><span class="service-tag">REST</span><span class="service-tag">GraphQL</span><span class="service-tag">Stripe</span><span class="service-tag">Webhooks</span></div></div>
+      <div class="service-card reveal" style="transition-delay:.3s"><div class="service-num">// 04</div><span class="service-icon">&#127959;</span><div class="service-name">Sistemas e ERPs</div><div class="service-desc">Plataformas de gestao empresarial sob medida. Modulos de RH, financeiro, estoque e relatorios adaptados ao seu negocio.</div><div class="service-tags"><span class="service-tag">PostgreSQL</span><span class="service-tag">Redis</span><span class="service-tag">Docker</span><span class="service-tag">AWS</span></div></div>
+      <div class="service-card reveal" style="transition-delay:.4s"><div class="service-num">// 05</div><span class="service-icon">&#127912;</span><div class="service-name">UI/UX e Design</div><div class="service-desc">Interfaces modernas, acessiveis e intuitivas. Design system, prototipagem no Figma e implementacao pixel-perfect.</div><div class="service-tags"><span class="service-tag">Figma</span><span class="service-tag">Design System</span><span class="service-tag">Prototipo</span></div></div>
+      <div class="service-card reveal" style="transition-delay:.5s"><div class="service-num">// 06</div><span class="service-icon">&#9729;</span><div class="service-name">Cloud e Infraestrutura</div><div class="service-desc">Deploy, CI/CD e infraestrutura escalavel na nuvem. Seu produto disponivel 24/7 com monitoramento e alta disponibilidade.</div><div class="service-tags"><span class="service-tag">AWS</span><span class="service-tag">Vercel</span><span class="service-tag">Docker</span><span class="service-tag">CI/CD</span></div></div>
+    </div>
+    <div class="numbers-strip reveal">
+      <div class="number-item"><div class="number-big"><span>+</span>20</div><div class="number-label">Projetos entregues</div></div>
+      <div class="number-item"><div class="number-big"><span>+</span>10</div><div class="number-label">Clientes satisfeitos</div></div>
+      <div class="number-item"><div class="number-big">3<span>+</span></div><div class="number-label">Anos de experiencia</div></div>
+      <div class="number-item"><div class="number-big">98<span>%</span></div><div class="number-label">Taxa de satisfacao</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="inner">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Projetos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card featured reveal">
+        <div>
+          <div class="project-num">// projeto destaque — 001</div>
+          <h3 class="project-title">Plataforma de Gestao Empresarial (ERP)</h3>
+          <p class="project-desc">Sistema ERP completo desenvolvido do zero para empresa de medio porte. Modulos de RH, financeiro, estoque, emissao de notas fiscais e relatorios gerenciais. Reducao de 60% no tempo de processos internos.</p>
+          <div class="project-tags"><span class="tag">Next.js</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">Docker</span><span class="tag">AWS</span></div>
+          <a href="#contact" class="project-link">Saiba Mais</a>
+        </div>
+        <div class="project-visual pv-blue">&#127970;</div>
+      </div>
+      <div class="project-card featured reveal" style="transition-delay:.15s">
+        <div class="project-visual pv-dark" style="order:-1">&#128722;</div>
+        <div>
+          <div class="project-num">// projeto destaque — 002</div>
+          <h3 class="project-title">Marketplace Multi-Vendedor</h3>
+          <p class="project-desc">Plataforma completa de e-commerce multi-vendor com painel para lojistas, split automatico via Stripe, gestao de pedidos em tempo real e app mobile. Mais de 200 pedidos no primeiro mes.</p>
+          <div class="project-tags"><span class="tag">React Native</span><span class="tag">Next.js</span><span class="tag">Stripe</span><span class="tag">MongoDB</span><span class="tag">Socket.io</span></div>
+          <a href="#contact" class="project-link">Saiba Mais</a>
+        </div>
+      </div>
+      <div class="project-card reveal" style="transition-delay:.2s">
+        <div class="project-num">// 003</div>
+        <h3 class="project-title">App Gestao Financeira</h3>
+        <p class="project-desc">App mobile para controle financeiro pessoal com dashboards interativos, categorizacao automatica e relatorios mensais.</p>
+        <div class="project-tags"><span class="tag">React Native</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span></div>
+        <a href="#contact" class="project-link">Saiba Mais</a>
+      </div>
+      <div class="project-card reveal" style="transition-delay:.3s">
+        <div class="project-num">// 004</div>
+        <h3 class="project-title">Dashboard SaaS Analytics</h3>
+        <p class="project-desc">Painel analitico em tempo real com graficos dinamicos, filtros avancados e relatorios exportaveis com autenticacao multi-tenant.</p>
+        <div class="project-tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">D3.js</span></div>
+        <a href="#contact" class="project-link">Saiba Mais</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section id="clients">
+  <div class="inner">
+    <div class="section-header reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Clientes</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="clients-grid">
+      <div class="client-card reveal"><div class="client-logo-wrap">&#127959;</div><div class="client-name">Construtora Alpha</div><div class="client-segment">Construcao Civil</div><div class="client-desc">Sistema de gestao de obras com controle de cronograma, equipes, custos e relatorios em tempo real.</div><div class="client-result">&#10022; Entregue em 3 meses</div></div>
+      <div class="client-card reveal" style="transition-delay:.1s"><div class="client-logo-wrap">&#127973;</div><div class="client-name">Clinica Bem-Estar</div><div class="client-segment">Saude</div><div class="client-desc">Plataforma de agendamento online, prontuario digital e gestao de consultas para clinica medica.</div><div class="client-result">&#10022; +40% agendamentos online</div></div>
+      <div class="client-card reveal" style="transition-delay:.2s"><div class="client-logo-wrap">&#128717;</div><div class="client-name">Boutique Trend</div><div class="client-segment">E-commerce</div><div class="client-desc">Loja virtual completa com integracao de pagamentos, gestao de estoque e app para acompanhar pedidos.</div><div class="client-result">&#10022; +180% vendas online</div></div>
+      <div class="client-card reveal" style="transition-delay:.3s"><div class="client-logo-wrap">&#127891;</div><div class="client-name">EduTech Start</div><div class="client-segment">Educacao</div><div class="client-desc">Plataforma EAD com aulas em video, quizzes interativos, certificados automaticos e painel do professor.</div><div class="client-result">&#10022; +500 alunos no 1 mes</div></div>
+      <div class="client-card reveal" style="transition-delay:.4s"><div class="client-logo-wrap">&#127829;</div><div class="client-name">Rede Saborosa</div><div class="client-segment">Food e Delivery</div><div class="client-desc">App de delivery com cardapio digital, rastreio de pedidos em tempo real e painel para franquias.</div><div class="client-result">&#10022; 3 unidades integradas</div></div>
+      <div class="client-card reveal" style="transition-delay:.5s"><div class="client-logo-wrap">&#127968;</div><div class="client-name">Financeira Nexus</div><div class="client-segment">Fintech</div><div class="client-desc">Dashboard financeiro com analise de carteiras, relatorios automatizados e integracao via Open Finance.</div><div class="client-result">&#10022; R$ 2M+ gerenciados</div></div>
+    </div>
+    <div class="clients-logos reveal">
+      <span class="logo-pill">Construtora Alpha</span>
+      <span class="logo-pill">Clinica Bem-Estar</span>
+      <span class="logo-pill">Boutique Trend</span>
+      <span class="logo-pill">EduTech Start</span>
+      <span class="logo-pill">Rede Saborosa</span>
+      <span class="logo-pill">Financeira Nexus</span>
+    </div>
+    <p class="clients-note reveal">+ outros clientes em sigilo contratual</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding:8rem 4rem">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-header reveal">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Contato</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-left reveal">
+        <h3>Tem um projeto<br>em mente? <span>Vamos falar.</span></h3>
+        <p>Estou sempre aberto a novos desafios e projetos. Se voce tem uma ideia ou precisa de um desenvolvedor dedicado, entre em contato — responderei em ate 24h.</p>
+        <div class="contact-socials">
+          <a href="mailto:contato@rolimlabs.com" class="social-link"><span>contato@rolimlabs.com</span><span class="arrow">&#8594;</span></a>
+          <a href="https://linkedin.com" target="_blank" class="social-link"><span>LinkedIn — Rolim Labs</span><span class="arrow">&#8594;</span></a>
+          <a href="https://github.com" target="_blank" class="social-link"><span>GitHub — @rolimlabs</span><span class="arrow">&#8594;</span></a>
+          <a href="https://wa.me/5500000000000" target="_blank" class="social-link"><span>WhatsApp</span><span class="arrow">&#8594;</span></a>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay:.2s">
+        <form class="contact-form" id="contactForm" action="https://formspree.io/f/mdawnzbl" method="POST">
+          <div class="form-group"><label>Nome</label><input type="text" name="nome" placeholder="Seu nome completo" required/></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="seu@email.com" required/></div>
+          <div class="form-group"><label>Empresa (opcional)</label><input type="text" name="empresa" placeholder="Nome da empresa"/></div>
+          <div class="form-group"><label>Mensagem</label><textarea name="mensagem" placeholder="Conte sobre seu projeto ou ideia..." required></textarea></div>
+          <div id="form-status" style="display:none;font-family:var(--fm);font-size:.78rem;padding:.7rem 1rem;margin-bottom:.5rem"></div>
+          <button type="submit" class="btn-send" id="submitBtn">Enviar Mensagem &#8594;</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <svg width="30" height="30" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="120" rx="14" fill="#131f35"/>
+      <text x="7" y="90" font-family="Arial Black,sans-serif" font-weight="900" font-size="84" fill="#F5F5F5">R</text>
+      <g transform="translate(60,16)">
+        <path d="M10 0 C10 0 44 0 44 16 C44 26 36 30 26 30 L26 86 C26 90 22 94 18 94 C14 94 10 90 10 86 L10 0Z" fill="#F97316"/>
+        <ellipse cx="30" cy="14" rx="9" ry="8" fill="#131f35"/>
+        <line x1="22" y1="8" x2="38" y2="8" stroke="#131f35" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="22" y1="14" x2="38" y2="14" stroke="#131f35" stroke-width="2" stroke-linecap="round"/>
+        <line x1="22" y1="20" x2="38" y2="20" stroke="#131f35" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <p>2025 <span>Rolim Labs</span> — Todos os direitos reservados</p>
+  </div>
+  <p>Feito com <span>amor</span> e muito cafe</p>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
+function animateCursor(){
+  cursor.style.left=(mx-5)+'px';cursor.style.top=(my-5)+'px';
+  rx+=(mx-rx-16)*0.14;ry+=(my-ry-16)*0.14;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+document.querySelectorAll('a,button,.service-card,.project-card,.client-card').forEach(function(el){
+  el.addEventListener('mouseenter',function(){cursor.style.transform='scale(2.2)';ring.style.transform='scale(1.6)';ring.style.opacity='0.8';});
+  el.addEventListener('mouseleave',function(){cursor.style.transform='scale(1)';ring.style.transform='scale(1)';ring.style.opacity='0.5';});
+});
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){entry.target.classList.add('visible');}
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+var contactForm=document.getElementById('contactForm');
+var formStatus=document.getElementById('form-status');
+var submitBtn=document.getElementById('submitBtn');
+if(contactForm){
+  contactForm.addEventListener('submit',async function(e){
+    e.preventDefault();
+    submitBtn.textContent='Enviando...';
+    submitBtn.disabled=true;
+    submitBtn.style.opacity='0.6';
+    var data=new FormData(contactForm);
+    try{
+      var res=await fetch('https://formspree.io/f/mdawnzbl',{method:'POST',body:data,headers:{Accept:'application/json'}});
+      if(res.ok){
+        formStatus.style.display='block';
+        formStatus.style.background='rgba(249,115,22,0.1)';
+        formStatus.style.border='1px solid rgba(249,115,22,0.3)';
+        formStatus.style.color='#F97316';
+        formStatus.textContent='Mensagem enviada com sucesso! Responderei em ate 24h.';
+        contactForm.reset();
+        submitBtn.textContent='Mensagem enviada!';
+        setTimeout(function(){formStatus.style.display='none';submitBtn.textContent='Enviar Mensagem';submitBtn.disabled=false;submitBtn.style.opacity='1';},5000);
+      } else {
+        formStatus.style.display='block';
+        formStatus.style.background='rgba(239,68,68,0.1)';
+        formStatus.style.border='1px solid rgba(239,68,68,0.3)';
+        formStatus.style.color='#f87171';
+        formStatus.textContent='Erro ao enviar. Tente novamente ou entre em contato pelo email diretamente.';
+        submitBtn.textContent='Enviar Mensagem';
+        submitBtn.disabled=false;
+        submitBtn.style.opacity='1';
+      }
+    } catch(err){
+      formStatus.style.display='block';
+      formStatus.style.background='rgba(239,68,68,0.1)';
+      formStatus.style.border='1px solid rgba(239,68,68,0.3)';
+      formStatus.style.color='#f87171';
+      formStatus.textContent='Erro de conexao. Verifique sua internet e tente novamente.';
+      submitBtn.textContent='Enviar Mensagem';
+      submitBtn.disabled=false;
+      submitBtn.style.opacity='1';
+    }
+  });
+}
+var navLinks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',function(){
+  var current='';
+  document.querySelectorAll('section[id]').forEach(function(s){if(window.scrollY>=s.offsetTop-220)current=s.id;});
+  navLinks.forEach(function(a){a.style.color=a.getAttribute('href')==='#'+current?'#F97316':'';});
+});
+</script>
+</body>
+</html>
