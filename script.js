@@ -1,17 +1,3 @@
-const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
-function animateCursor(){
-  cursor.style.left=(mx-5)+'px';cursor.style.top=(my-5)+'px';
-  rx+=(mx-rx-16)*0.14;ry+=(my-ry-16)*0.14;
-  ring.style.left=rx+'px';ring.style.top=ry+'px';
-  requestAnimationFrame(animateCursor);
-}
-animateCursor();
-document.querySelectorAll('a,button,.service-card,.project-card,.client-card').forEach(function(el){
-  el.addEventListener('mouseenter',function(){cursor.style.transform='scale(2.2)';ring.style.transform='scale(1.6)';ring.style.opacity='0.8';});
-  el.addEventListener('mouseleave',function(){cursor.style.transform='scale(1)';ring.style.transform='scale(1)';ring.style.opacity='0.5';});
-});
 var obs=new IntersectionObserver(function(entries){
   entries.forEach(function(entry){
     if(entry.isIntersecting){entry.target.classList.add('visible');}
